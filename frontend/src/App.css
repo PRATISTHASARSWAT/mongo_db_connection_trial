@@ -1,0 +1,39 @@
+body {
+  font-family: sans-serif;
+  background: #f8fafc;
+}
+
+.container {
+  display: flex;
+  padding: 60px;
+}
+
+.left {
+  width: 50%;
+}
+
+.right {
+  width: 50%;
+}
+
+.upload-box {
+  border: 2px dashed #ccc;
+  padding: 40px;
+  text-align: center;
+}
+
+button {
+  background: #1e3a8a;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.result {
+  margin-top: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
