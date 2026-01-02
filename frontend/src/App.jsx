@@ -14,8 +14,16 @@ function App() {
     formData.append("cv", file);
 
     setLoading(true);
-    const res = await axios.post("http://localhost:5000/upload", formData);
-    setResult(res.data);
+
+    try {
+      // Send to Node.js server
+      const res = await axios.post("http://localhost:5000/upload", formData);
+      setResult(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Resume processing failed");
+    }
+
     setLoading(false);
   };
 
@@ -42,6 +50,13 @@ function App() {
           <div className="result">
             <h3>Resume Summary</h3>
             <p>{result.summary}</p>
+
+            <h3>Skills</h3>
+            <ul>
+              {result.skills.map((skill, i) => (
+                <li key={i}>{skill}</li>
+              ))}
+            </ul>
 
             <h3>Interview Questions</h3>
             <ul>

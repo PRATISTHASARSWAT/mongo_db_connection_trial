@@ -17,13 +17,17 @@ async def parse_resume_api(file: UploadFile = File(...)):
 
     questions = generate_interview_questions(
         summary=summary,
-        skills=parsed_data["skills"],
+        skills=parsed_data.get("skills", []),
         has_experience=has_experience,
         has_projects=has_projects
     )
 
+    # Return full structured data
     return {
         "summary": summary,
-        "parsed_data": parsed_data,
+        "parsed_data": {
+            "skills": parsed_data.get("skills", []),
+            "text": text
+        },
         "interview_questions": questions
     }

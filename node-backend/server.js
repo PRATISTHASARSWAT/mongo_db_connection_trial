@@ -14,8 +14,8 @@ app.use(express.json());
 /* -------------------- MONGODB -------------------- */
 mongoose
   .connect("mongodb://127.0.0.1:27017/resume_ai")
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB error:", err));
+  .then(() => console.log("✅ MongoDB connected to database:", mongoose.connection.name))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 /* -------------------- SCHEMA -------------------- */
 const ResumeSchema = new mongoose.Schema({
@@ -62,21 +62,28 @@ app.post("/upload", upload.single("cv"), async (req, res) => {
       }
     );
 
-    const { text, skills, questions } = aiResponse.data;
+    const { summary, parsed_data, interview_questions } = aiResponse.data;
 
     // Save to MongoDB
     const resumeDoc = new Resume({
       filename: req.file.originalname,
-      extracted_text: text || "",
-      skills: skills || [],
-      questions: questions || []
+      extracted_text: parsed_data.text || "",
+      skills: parsed_data.skills || [],
+      questions: interview_questions || []
     });
 
-    await resumeDoc.save();
+    try {
+      await resumeDoc.save();
+      console.log("✅ Resume saved to MongoDB:", resumeDoc);
+    } catch (err) {
+      console.error("❌ Failed to save resume:", err);
+    }
 
+    // Return response to React
     res.json({
-      message: "Resume processed and saved successfully ✅",
-      data: resumeDoc
+      summary,
+      skills: parsed_data.skills || [],
+      questions: interview_questions || []
     });
 
   } catch (err) {
@@ -85,7 +92,7 @@ app.post("/upload", upload.single("cv"), async (req, res) => {
   }
 });
 
-// Fetch all resumes (optional, for UI)
+// Fetch all resumes (optional)
 app.get("/resumes", async (req, res) => {
   try {
     const resumes = await Resume.find().sort({ createdAt: -1 });
